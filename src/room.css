@@ -1,0 +1,8 @@
+.Room {
+    width: 350px;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    margin: 20px;
+}

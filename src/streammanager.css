@@ -1,0 +1,23 @@
+.StreamManager-panelpreview {
+    border: 1px solid black;
+    text-align: center;
+    padding:0;
+    margin-bottom:10px;
+}
+
+.StreamManager-panelpreview h4 {
+    margin: 0;
+}
+
+.StreamManager-panelpreview img {
+    max-width: 100%;
+    display: block;
+}
+
+.StreamManager-fixers {
+    text-align: center;
+}
+
+.StreamManager {
+    padding-bottom: 10px;
+}

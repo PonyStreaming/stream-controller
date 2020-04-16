@@ -1,0 +1,15 @@
+.StreamStatus-preview {
+    border: 1px solid black;
+    text-align: center;
+    padding:0;
+    margin-bottom:10px;
+}
+
+.StreamStatus-preview h4 {
+    margin: 0;
+}
+
+.StreamStatus-preview .RTMPPreview {
+    max-width: 100%;
+    display: block;
+}
