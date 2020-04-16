@@ -9,7 +9,7 @@
     margin: 0;
 }
 
-.StreamStatus-preview .RTMPPreview {
+.StreamStatus-preview canvas {
     max-width: 100%;
     display: block;
 }
