@@ -76,7 +76,7 @@ export function StreamStatus(props: StreamStatusProps): ReactElement {
         {streaming ? <>
         <div className="StreamStatus-preview">
                 <h4>Stream output</h4>
-                <RTMPPreview streamName={props.streamName} muted={props.muted} />
+                <RTMPPreview app="output" streamName={props.streamName} muted={props.muted} />
         </div>
             </> : <></>}
         <details>

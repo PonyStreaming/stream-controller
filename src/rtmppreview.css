@@ -1,0 +1,19 @@
+.RTMPPreview-video {
+    max-width: 100%;
+    width: 350px;
+    height: 197px;
+    display: block;
+}
+
+.RTMPPreview-level {
+    max-width: 100%;
+    width: 350px;
+    height: 4px;
+    display: block;
+}
+
+.RTMPPreview {
+    max-width: 100%;
+    width: 350px;
+    height: 201px;
+}

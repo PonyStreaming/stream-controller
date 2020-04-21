@@ -4,9 +4,14 @@ import {PanelAudioFixer} from "./panelaudiofixer";
 import {TitleAudioFixer} from "./titleaudiofixer";
 import {PANEL_SCENE, PANEL_SOURCE} from "./constants";
 import "./streammanager.css";
+import {StreamSchedule} from "./streamschedule";
 
 interface StreamManagerProps {
     obs: OBS;
+    roomName: string;
+    password: string;
+    muted: boolean;
+    requestMuteState: (muted: boolean) => void;
 }
 
 export function StreamManager(props: StreamManagerProps): ReactElement {
@@ -58,14 +63,14 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
     }
 
     return <div className="StreamManager">
-        <h3>Panel manager</h3>
-        <p>Stream:
-            <select size={1} onChange={(e) => updateStreamURL(e.target.value)} value={currentStreamURL}>
-                <option value="rtmp://rtmp.ponyfest.horse/live/stream">Test stream</option>
-                <option value="rtmp://rtmp.ponyfest.horse/live/obs1">OBS 1</option>
-                <option value="rtmp://rtmp.ponyfest.horse/live/obs2">OBS 2</option>
-            </select>
-        </p>
+        <StreamSchedule
+            room={props.roomName}
+            password={props.password}
+            muted={props.muted}
+            requestMuteState={props.requestMuteState}
+            currentStreamKey={currentStreamURL.split('/').pop()!}
+            requestStreamKey={(key) => updateStreamURL('rtmp://rtmp.ponyfest.horse/live/' + key)}
+        />
         <div className="StreamManager-panelpreview">
             <h4>Incoming panel preview</h4>
             {previewImage !== "" ? <img src={previewImage} alt="preview of panel status" /> : "Source preview unavailable"}

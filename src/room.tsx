@@ -23,6 +23,7 @@ export function Room(props: RoomProps): ReactElement {
     const [obs, setObs] = useState(undefined as OBS | undefined);
     const [connected, setConnected] = useState(false);
     const [currentScene, setCurrentScene] = useState("");
+    const [previewAudio, setPreviewAudio] = useState(false);
 
     useEffect(() => {
         const obs = new OBS();
@@ -67,9 +68,9 @@ export function Room(props: RoomProps): ReactElement {
     const connectedUI = obs ? <>
         <SceneManager obs={obs} currentScene={currentScene}/>
         <Divider />
-        <StreamManager obs={obs} />
+        <StreamManager obs={obs} roomName={props.name} password={props.password} muted={props.muted || !previewAudio} requestMuteState={(muted) => setPreviewAudio(!muted)} />
         <Divider />
-        <StreamStatus obs={obs} streamName={props.streamName} muted={props.muted} />
+        <StreamStatus obs={obs} streamName={props.streamName} muted={props.muted || previewAudio} />
     </> : <>Disconnected.</>;
 
     const muteButton = props.muted ? <VolumeOffIcon color="secondary" onClick={() => props.onRequestMuteState(false)} style={{cursor: "pointer"}} /> : <VolumeUpIcon color="primary" onClick={() => props.onRequestMuteState(true)} style={{cursor: "pointer"}} />
