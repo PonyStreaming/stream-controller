@@ -1,5 +1,7 @@
 import moment, {Moment} from "moment-timezone";
 
+const SCHEDULE_URL = "https://schedule-api.ponyfest.horse/schedule/";
+
 export interface Event {
     id: string;
     startTime: Moment;
@@ -13,29 +15,27 @@ export interface Schedule {
     rooms: {[room: string]: Event[]};
 }
 
+interface ReceivedEvent {
+    id: string;
+    startTime: string;
+    endTime: string;
+    title: string;
+    panelists: string;
+    description: string;
+}
+
+interface ReceivedSchedule {
+    rooms: {[room: string]: ReceivedEvent[]};
+}
+
 export async function fetchSchedule(): Promise<Schedule> {
-    return {
-        rooms: {
-            "Bit Rate's Room": [
-                {
-                    id: "OBS 1",
-                    startTime: moment("2020-04-25T10:00-04:00"),
-                    endTime: moment("2020-04-25T10:30-04:00"),
-                    title: "Opening Ceremonies",
-                    panelists: "Dexanth, I guess?",
-                    description: "poni"
-                },
-                {
-                    id: "OBS 2",
-                    startTime: moment("2020-04-25T10:30-04:00"),
-                    endTime: moment("2020-04-25T11:00-04:00"),
-                    title: "Euroconcert! words words words words words",
-                    panelists: "ponyponypony",
-                    description: "europeans make the horse sounds",
-                },
-            ]
-        }
+    const request = await fetch(SCHEDULE_URL);
+    const json = await request.json() as ReceivedSchedule;
+    const schedule = {rooms: {}} as Schedule;
+    for (const room of Object.keys(json.rooms)) {
+        schedule.rooms[room] = json.rooms[room].map(x => ({...x, startTime: moment(x.startTime), endTime: moment(x.endTime)}))
     }
+    return schedule;
 }
 
 export class Scheduler {
