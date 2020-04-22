@@ -1,12 +1,31 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import {Room} from "./room";
 import {Button, Card, CardContent, Grid, TextField} from "@material-ui/core";
 
+interface Room {
+    endpoint: string;
+    key: string;
+    name: string;
+}
+
 function App() {
+    const [rooms, setRooms] = useState([] as Room[]);
     const [password, setPassword] = useState(localStorage["password"] || "");
     const [loggedIn, setLoggedIn] = useState(false);
     const [unmutedRoom, setUnmutedRoom] = useState("");
+
+    useEffect(() => {
+        if (password === "") {
+            return;
+        }
+
+        (async () => {
+            const request = await fetch("https://tracker.stream-control.ponyfest.horse/api/outputs?password=" + password);
+            const json = await request.json();
+            setRooms(json.outputs);
+        })();
+    }, [password]);
 
     function logIn() {
         localStorage["password"] = password;
@@ -23,21 +42,16 @@ function App() {
         }
     }
 
-    const rooms = [
-        {name: "Mane Events", endpoint: "obs1", streamName: "main"},
-        {name: "Celestial Hall", endpoint: "obs2", streamName: "main2"},
-    ];
-
     const roomElements = rooms
         .map(x =>
             <Room
-                key={x.streamName}
+                key={x.key}
                 name={x.name}
-                endpoint={`wss://${x.endpoint}.stream-control.ponyfest.horse`}
-                streamName={x.streamName}
+                endpoint={x.endpoint}
+                streamName={x.key}
                 password={password}
-                muted={unmutedRoom !== x.streamName}
-                onRequestMuteState={(muted) => requestMuteState(x.streamName, muted)}
+                muted={unmutedRoom !== x.name}
+                onRequestMuteState={(muted) => requestMuteState(x.name, muted)}
             />);
 
     if (loggedIn) {
