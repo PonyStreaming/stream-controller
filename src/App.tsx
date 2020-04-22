@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import './App.css';
 import {Room} from "./room";
 import {Button, Card, CardContent, Grid, TextField} from "@material-ui/core";
+import {Clock} from "./clock";
 
 interface Room {
     endpoint: string;
@@ -56,9 +57,12 @@ function App() {
 
     if (loggedIn) {
         return (
-            <div className="App">
-                {roomElements}
-            </div>
+            <>
+                <Clock />
+                <div className="App">
+                    {roomElements}
+                </div>
+            </>
         );
     } else {
         return (
