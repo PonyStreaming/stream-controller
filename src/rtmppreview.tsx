@@ -56,7 +56,7 @@ export function RTMPPreview(props: RTMPPreviewProps): ReactElement {
             context.fillRect(peakPos, 0, 2, levelsCanvas.height);
         }
 
-        playerRef.current = new JSMpeg.Player("ws://previews.stream-control.ponyfest.horse/stream/" + (props.app ? props.app + '/' : '') + props.streamName, {canvas: canvasRef.current, pauseWhenHidden: false});
+        playerRef.current = new JSMpeg.Player("wss://previews.stream-control.ponyfest.horse/stream/" + (props.app ? props.app + '/' : '') + props.streamName, {canvas: canvasRef.current, pauseWhenHidden: false});
         // Hijack the audio output to collect its audio data for our level meter
         let p = playerRef.current.audioOut.play.bind(playerRef.current.audioOut);
         playerRef.current.audioOut.play = (sampleRate: number, left: Float32Array, right: Float32Array) => {
