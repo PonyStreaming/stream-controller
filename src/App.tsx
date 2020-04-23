@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
 import {Room} from "./room";
-import {Button, Card, CardContent, Grid, TextField} from "@material-ui/core";
+import {Button, Card, CardContent, CardHeader, Grid, TextField, Typography} from "@material-ui/core";
 import {Clock} from "./clock";
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 interface Room {
     endpoint: string;
@@ -58,8 +59,41 @@ function App() {
     if (loggedIn) {
         return (
             <>
-                <Clock />
                 <div className="App">
+                    <div>
+                        <Card style={{width: 400, margin: 20}}>
+                            <CardContent style={{textAlign: "center"}}>
+                                <Clock />
+                            </CardContent>
+                        </Card>
+                        <Card style={{width: 400, margin: 20}}>
+                            <CardContent style={{textAlign: "center"}}>
+                                <Typography variant="body1">
+                                    Room selector goes here.
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                        <Card style={{width: 400, margin: 20}}>
+                            <CardHeader title="Tips" style={{paddingBottom: 0}} />
+                            <CardContent style={{paddingTop: 0}}>
+                                <Typography variant="body1">
+                                    <ul>
+                                        <li>The incoming panel preview updates once per second and represents what OBS actually sees for the active panel (even when on another scene).
+                                            <strong> If it's blank, don't switch to the panel stream.</strong></li>
+                                        <li>Avoid panel switching when the panel scene is active. Switch to another one, change panel, wait until the incoming preview image
+                                            makes sense, wait a second, then switch back.</li>
+                                        <li>If the active stream has no audio or has other issues, you can click "reboot panel" (for a panel) or "reboot tech"
+                                            (for a tech stream) to fix it. This generally takes one second + keyframe interval</li>
+                                        <li>If an event on the schedule has a <VisibilityIcon color="secondary"  fontSize="inherit" />, it is currently receiving a stream
+                                            from the panelist.
+                                            You can click the <VisibilityIcon color="secondary"  fontSize="inherit" />  to preview the stream without switching the panel.
+                                            Note that this preview is stuttery.</li>
+                                        <li>Click the mute icon at the top right to preview stream audio. This has no effect on the outgoing stream.</li>
+                                    </ul>
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </div>
                     {roomElements}
                 </div>
             </>

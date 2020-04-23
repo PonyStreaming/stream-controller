@@ -14,7 +14,7 @@ export function Clock(): ReactElement {
     });
 
     return (
-        <Typography className="Clock" style={{paddingLeft: 20}} variant="h4" component="div">
+        <Typography className="Clock" variant="h2" component="div">
             {moment(time).tz("America/New_York").format("HH:mm:ss z")}
         </Typography>
     );
