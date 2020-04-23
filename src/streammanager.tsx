@@ -5,6 +5,7 @@ import {PANEL_SCENE, PANEL_SOURCE, TECH_SOURCE} from "./constants";
 import "./streammanager.css";
 import {StreamSchedule} from "./streamschedule";
 import {StreamVolume} from "./streamvolume";
+import {PanelSettings} from "./panelsettings";
 
 interface StreamManagerProps {
     obs: OBS;
@@ -79,6 +80,8 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
         <div className="StreamManager-fixers">
             <StreamAudioFixer obs={props.obs} source={PANEL_SOURCE} label="Reboot Panel" />
             <StreamAudioFixer obs={props.obs} source={TECH_SOURCE} label="Reboot Tech" />
+            {/* Todo: put this button somewhere less ridiculous. */}
+            <PanelSettings obs={props.obs} />
         </div>
     </div>;
 }
