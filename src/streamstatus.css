@@ -2,7 +2,8 @@
     border: 1px solid black;
     text-align: center;
     padding:0;
-    margin-bottom:10px;
+    width: 350px;
+    margin: 10px auto;
 }
 
 .StreamStatus-preview h4 {

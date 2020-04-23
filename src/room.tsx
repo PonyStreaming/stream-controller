@@ -75,7 +75,7 @@ export function Room(props: RoomProps): ReactElement {
 
     const muteButton = props.muted ? <VolumeOffIcon color="secondary" onClick={() => props.onRequestMuteState(false)} style={{cursor: "pointer"}} /> : <VolumeUpIcon color="primary" onClick={() => props.onRequestMuteState(true)} style={{cursor: "pointer"}} />
 
-    return <Card style={{width: 380, margin: 20}}>
+    return <Card style={{width: 450, margin: 20}}>
         <CardHeader title={props.name} style={{paddingBottom: 0}} action={muteButton} />
         <CardContent>
             {connectedUI}
