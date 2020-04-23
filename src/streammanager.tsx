@@ -1,8 +1,7 @@
 import React, {ReactElement, useEffect, useState} from 'react';
 import OBS from "@ponyfest/obs-websocket-js";
-import {PanelAudioFixer} from "./panelaudiofixer";
-import {TitleAudioFixer} from "./titleaudiofixer";
-import {PANEL_SCENE, PANEL_SOURCE} from "./constants";
+import {StreamAudioFixer} from "./streamaudiofixer";
+import {PANEL_SCENE, PANEL_SOURCE, TECH_SOURCE} from "./constants";
 import "./streammanager.css";
 import {StreamSchedule} from "./streamschedule";
 
@@ -76,7 +75,8 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
             {previewImage !== "" ? <img src={previewImage} alt="preview of panel status" /> : "Source preview unavailable"}
         </div>
         <div className="StreamManager-fixers">
-            <PanelAudioFixer obs={props.obs} /> <TitleAudioFixer obs={props.obs} />
+            <StreamAudioFixer obs={props.obs} source={PANEL_SOURCE} label="Reboot Panel" />
+            <StreamAudioFixer obs={props.obs} source={TECH_SOURCE} label="Reboot Tech" />
         </div>
     </div>;
 }
