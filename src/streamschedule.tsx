@@ -94,13 +94,13 @@ export function StreamSchedule(props: StreamScheduleProps): ReactElement {
     const scheduleList = events.map(x => (
         <ListItem button key={x.id} selected={x.stream?.key === props.currentStreamKey} onClick={() => props.requestStreamKey(x.stream!.key)}>
             <ListItemText
-                primary={<><strong>{x.startTime.tz("America/New_York").format("HH:mm")}</strong>: {x.stream?.live ? <Chip color="secondary" label="LIVE" /> : <></>} {x.title}</>}
+                primary={<><strong>{x.startTime.tz("America/New_York").format("HH:mm")}</strong>: {x.title}</>}
                 secondary={x.panelists}
             />
             {x.stream?.live ?
             <ListItemSecondaryAction>
                 <IconButton title="Preview" edge="end" onClick={(e) => preview(e.target as HTMLElement, x.stream?.key || "")}>
-                    <VisibilityIcon />
+                    <VisibilityIcon color="secondary" />
                 </IconButton>
             </ListItemSecondaryAction>
                 : <></>}
