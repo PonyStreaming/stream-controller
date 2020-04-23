@@ -4,6 +4,7 @@ import {StreamAudioFixer} from "./streamaudiofixer";
 import {PANEL_SCENE, PANEL_SOURCE, TECH_SOURCE} from "./constants";
 import "./streammanager.css";
 import {StreamSchedule} from "./streamschedule";
+import {StreamVolume} from "./streamvolume";
 
 interface StreamManagerProps {
     obs: OBS;
@@ -74,6 +75,7 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
             <h4>Incoming panel preview</h4>
             {previewImage !== "" ? <img src={previewImage} alt="preview of panel status" /> : "Source preview unavailable"}
         </div>
+        <StreamVolume obs={props.obs} source={PANEL_SOURCE} />
         <div className="StreamManager-fixers">
             <StreamAudioFixer obs={props.obs} source={PANEL_SOURCE} label="Reboot Panel" />
             <StreamAudioFixer obs={props.obs} source={TECH_SOURCE} label="Reboot Tech" />
