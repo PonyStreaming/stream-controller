@@ -1,7 +1,17 @@
 import React, {ReactElement, useEffect, useState} from "react";
 import {Schedule, Scheduler, Event} from "./utils/schedule";
-import {Chip, IconButton, List, ListItem, ListItemSecondaryAction, ListItemText, Popover} from "@material-ui/core";
+import {
+    Chip,
+    IconButton,
+    List,
+    ListItem,
+    ListItemSecondaryAction,
+    ListItemText,
+    Popover,
+    Snackbar
+} from "@material-ui/core";
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import LinkIcon from '@material-ui/icons/Link';
 import {PanelStreamTracker, Stream} from "./utils/panelstreamtracker";
 import {RTMPPreview} from "./rtmppreview";
 
@@ -32,6 +42,7 @@ export function StreamSchedule(props: StreamScheduleProps): ReactElement {
     const [previewAnchor, setPreviewAnchor] = useState(null as HTMLElement | null);
     const [streams, setStreams] = useState(null as Map<string, Stream> | null);
     const [previewKey, setPreviewKey] = useState("");
+    const [notification, setNotification] = useState("");
 
     useEffect(() => {
         const interval = setInterval(async () => setSchedule(await scheduler.getSchedule()), 60000);
@@ -97,13 +108,23 @@ export function StreamSchedule(props: StreamScheduleProps): ReactElement {
                 primary={<><strong>{x.startTime.tz("America/New_York").format("HH:mm")}</strong>: {x.title}</>}
                 secondary={x.panelists}
             />
-            {x.stream?.live ?
             <ListItemSecondaryAction>
-                <IconButton title="Preview" edge="end" onClick={(e) => preview(e.target as HTMLElement, x.stream?.key || "")}>
-                    <VisibilityIcon color="secondary" />
+                <IconButton title="Copy Link" edge="end" onClick={(e) => {
+                    navigator.clipboard.writeText("rtmp://rtmp.ponyfest.horse/live/" + x.stream?.key).then(() => {
+                        setNotification("Copied RTMP link to clipboard");
+                    }).catch((e) => {
+                        setNotification("Could not copy link. Key: " + x.stream?.key);
+                    });
+                    e.stopPropagation();
+                }} onMouseDown={(e) => e.stopPropagation()}>
+                    <LinkIcon />
                 </IconButton>
+                {x.stream?.live ?
+                    <IconButton title="Preview" edge="end" onClick={(e) => preview(e.target as HTMLElement, x.stream?.key || "")}>
+                        <VisibilityIcon color="secondary" />
+                    </IconButton>
+                    : <></>}
             </ListItemSecondaryAction>
-                : <></>}
         </ListItem>
     ))
 
@@ -121,6 +142,7 @@ export function StreamSchedule(props: StreamScheduleProps): ReactElement {
             >
                 <RTMPPreview app="live" streamName={previewKey} muted={props.muted} />
             </Popover>
+            <Snackbar open={notification != ""} autoHideDuration={6000} onClose={() => setNotification("")} message={notification} />
         </>
     );
 }
