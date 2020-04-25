@@ -78,8 +78,8 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
         </div>
         <StreamVolume obs={props.obs} source={PANEL_SOURCE} />
         <div className="StreamManager-fixers">
-            <StreamAudioFixer obs={props.obs} source={PANEL_SOURCE} label="Reboot Panel" />
-            <StreamAudioFixer obs={props.obs} source={TECH_SOURCE} label="Reboot Tech" />
+            <StreamAudioFixer obs={props.obs} source={PANEL_SOURCE} label="Reboot Panel" color="secondary" />
+            <StreamAudioFixer obs={props.obs} source={TECH_SOURCE} label="Reboot Tech" color="primary"/>
             {/* Todo: put this button somewhere less ridiculous. */}
             <PanelSettings obs={props.obs} />
         </div>
