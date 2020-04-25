@@ -1,11 +1,13 @@
 import React, {ReactElement} from 'react';
 import OBS from "@ponyfest/obs-websocket-js";
 import {Button} from "@material-ui/core";
+import {PropTypes} from "@material-ui/core";
 
 interface StreamManagerProps {
     obs: OBS;
     source: string;
     label: string;
+    color: PropTypes.Color;
 }
 
 export function StreamAudioFixer(props: StreamManagerProps): ReactElement {
@@ -19,5 +21,5 @@ export function StreamAudioFixer(props: StreamManagerProps): ReactElement {
         }, 1000);
     }
 
-    return <Button variant="contained" color="secondary" onClick={() => fixPanelAudio()}>{props.label}</Button>;
+    return <Button variant="contained" color={props.color} onClick={() => fixPanelAudio()}>{props.label}</Button>;
 }
