@@ -1,7 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import './App.css';
 import {Room} from "./room";
-import {Button, Card, CardContent, CardHeader, Grid, TextField, Typography} from "@material-ui/core";
+import {
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    Grid,
+    List,
+    ListItem, ListItemSecondaryAction,
+    ListItemText, Switch,
+    TextField,
+    Typography
+} from "@material-ui/core";
 import {Clock} from "./clock";
 import VisibilityIcon from '@material-ui/icons/Visibility';
 
@@ -12,6 +23,7 @@ interface Room {
 }
 
 function App() {
+    const [availableRooms, setAvailableRooms] = useState([] as Room[]);
     const [rooms, setRooms] = useState([] as Room[]);
     const [password, setPassword] = useState(localStorage["password"] || "");
     const [loggedIn, setLoggedIn] = useState(false);
@@ -25,6 +37,7 @@ function App() {
         (async () => {
             const request = await fetch("https://tracker.stream-control.ponyfest.horse/api/outputs?password=" + password);
             const json = await request.json();
+            setAvailableRooms(json.outputs);
             setRooms(json.outputs);
         })();
     }, [password]);
@@ -56,6 +69,14 @@ function App() {
                 onRequestMuteState={(muted) => requestMuteState(x.name, muted)}
             />);
 
+    function setRoomEnabled(room: Room, enabled: boolean) {
+        if (enabled) {
+            setRooms(availableRooms.filter(x => x === room || !!rooms.find((y) => y === x)));
+        } else {
+            setRooms(rooms.filter((x) => x !== room));
+        }
+    }
+
     if (loggedIn) {
         return (
             <>
@@ -68,9 +89,16 @@ function App() {
                         </Card>
                         <Card style={{width: 400, margin: 20}}>
                             <CardContent style={{textAlign: "center"}}>
-                                <Typography variant="body1">
-                                    Room selector goes here.
-                                </Typography>
+                                <List style={{width: "100%"}} dense={true}>
+                                    {availableRooms.map(x => (
+                                        <ListItem key={x.name}>
+                                            <ListItemText primary={x.name} />
+                                            <ListItemSecondaryAction>
+                                                <Switch edge="end" checked={!!rooms.find((y) => y === x)} onChange={(e, checked) => setRoomEnabled(x, checked)} />
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                    ))}
+                                </List>
                             </CardContent>
                         </Card>
                         <Card style={{width: 400, margin: 20}}>
