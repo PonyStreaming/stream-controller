@@ -30,7 +30,7 @@ export function RTMPPreview(props: RTMPPreviewProps): ReactElement {
         // time we received audio data, which is quite often.
         const levels = [0];
         let chunkPointer = 0;
-        const oldChunks = [[0]];
+        const oldChunks = [[0, 0, 0, 0, 0, 0, 0, 0]];
         const peaks = [-Infinity];
         const lastPeakReset = [0, 0];
         function updateMeters(channels: Float32Array[]) {
@@ -43,7 +43,7 @@ export function RTMPPreview(props: RTMPPreviewProps): ReactElement {
                     lastPeakReset[i] = Date.now();
                 }
             }
-            chunkPointer = (chunkPointer + 1) % 15;
+            chunkPointer = (chunkPointer + 1) % oldChunks[0].length;
 
             const levelsCanvas = levelsRef.current!;
 
