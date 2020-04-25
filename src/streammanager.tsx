@@ -44,21 +44,6 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
        }
     }, [props.obs]);
 
-    useEffect(() => {
-        const interval = setInterval(async () => {
-            const sceneItem = await props.obs.send("GetSceneItemProperties", {"scene-name": PANEL_SCENE, item: PANEL_SOURCE});
-            if ((sceneItem.width !== 1920 || sceneItem.height !== 1080) && sceneItem.sourceHeight > 0 && sceneItem.sourceWidth > 0) {
-                const scale = Math.min(1920 / sceneItem.sourceWidth, 1080 / sceneItem.sourceHeight);
-                console.log(`Resizing source, scale factor ${scale}...`);
-                await props.obs.send("SetSceneItemProperties", {"scene-name": PANEL_SCENE, item: PANEL_SOURCE, position: {x: 0, y: 0}, scale: {x: scale, y: scale}, bounds: {}, crop: {}})
-            }
-        }, 1000);
-
-        return () => {
-            return clearInterval(interval);
-        }
-    }, [props.obs]);
-
     async function updateStreamURL(url: string) {
         const currentSettings = await props.obs.send("GetSourceSettings", {sourceName: "RTMP stream"});
         await props.obs.send("SetSourceSettings", {sourceName: "RTMP stream", sourceSettings: {...currentSettings, input: url}})
