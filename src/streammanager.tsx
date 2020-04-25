@@ -6,6 +6,7 @@ import "./streammanager.css";
 import {StreamSchedule} from "./streamschedule";
 import {StreamVolume} from "./streamvolume";
 import {PanelSettings} from "./panelsettings";
+import {PanelStreamTracker} from "./utils/panelstreamtracker";
 
 interface StreamManagerProps {
     obs: OBS;
@@ -13,6 +14,7 @@ interface StreamManagerProps {
     password: string;
     muted: boolean;
     requestMuteState: (muted: boolean) => void;
+    streamTracker?: PanelStreamTracker
 }
 
 export function StreamManager(props: StreamManagerProps): ReactElement {
@@ -71,6 +73,7 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
             requestMuteState={props.requestMuteState}
             currentStreamKey={currentStreamURL.split('/').pop()!}
             requestStreamKey={(key) => updateStreamURL('rtmp://rtmp.ponyfest.horse/live/' + key)}
+            streamTracker={props.streamTracker}
         />
         <div className="StreamManager-panelpreview">
             <h4>Incoming panel preview</h4>

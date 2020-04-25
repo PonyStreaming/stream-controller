@@ -1,7 +1,6 @@
 import React, {ReactElement, useEffect, useState} from "react";
 import {Schedule, Scheduler, Event} from "./utils/schedule";
 import {
-    Chip,
     IconButton,
     List,
     ListItem,
@@ -23,22 +22,13 @@ interface StreamScheduleProps {
     requestMuteState: (muted: boolean) => void;
     currentStreamKey: string;
     requestStreamKey: (key: string) => void;
+    streamTracker?: PanelStreamTracker;
 }
 
 const scheduler = new Scheduler();
-const streamTrackers: {[password: string]: PanelStreamTracker} = {};
-
-async function getStreamTracker(password: string): Promise<PanelStreamTracker> {
-    if (!streamTrackers[password]) {
-        streamTrackers[password] = new PanelStreamTracker(password);
-        await streamTrackers[password].start();
-    }
-    return streamTrackers[password];
-}
 
 export function StreamSchedule(props: StreamScheduleProps): ReactElement {
     const [schedule, setSchedule] = useState(null as Schedule | null)
-    const [streamTracker, setStreamTracker] = useState(null as PanelStreamTracker | null);
     const [previewAnchor, setPreviewAnchor] = useState(null as HTMLElement | null);
     const [streams, setStreams] = useState(null as Map<string, Stream> | null);
     const [previewKey, setPreviewKey] = useState("");
@@ -57,29 +47,20 @@ export function StreamSchedule(props: StreamScheduleProps): ReactElement {
     }, [])
 
     useEffect(() => {
-        (async () => {
-            setStreamTracker(await getStreamTracker(props.password))
-        })();
-    }, [props.password]);
-
-    useEffect(() => {
-        if (streamTracker) {
-            setStreams(new Map<string, Stream>(streamTracker.mapping!))
+        if (props.streamTracker) {
+            setStreams(new Map<string, Stream>(props.streamTracker.mapping!))
 
             const update = () => {
-                setStreams(new Map<string, Stream>(streamTracker.mapping!));
-                console.log("updating...");
+                setStreams(new Map<string, Stream>(props.streamTracker!.mapping!));
             };
 
-            console.log("waiting...");
-            streamTracker.addEventListener('streamupdated', update)
+            props.streamTracker.addEventListener('streamupdated', update)
 
             return () => {
-                console.log("unwaiting...");
-                streamTracker.removeEventListener('streamupdated', update);
+                props.streamTracker!.removeEventListener('streamupdated', update);
             }
         }
-    }, [streamTracker])
+    }, [props.streamTracker])
 
     if (!schedule) {
         return <></>;
@@ -142,7 +123,7 @@ export function StreamSchedule(props: StreamScheduleProps): ReactElement {
             >
                 <RTMPPreview app="live" streamName={previewKey} muted={props.muted} />
             </Popover>
-            <Snackbar open={notification != ""} autoHideDuration={6000} onClose={() => setNotification("")} message={notification} />
+            <Snackbar open={notification !== ""} autoHideDuration={6000} onClose={() => setNotification("")} message={notification} />
         </>
     );
 }

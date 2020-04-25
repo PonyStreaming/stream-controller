@@ -20,6 +20,7 @@ interface Room {
     endpoint: string;
     key: string;
     name: string;
+    techStream: string;
 }
 
 function App() {
@@ -67,6 +68,7 @@ function App() {
                 password={password}
                 muted={unmutedRoom !== x.name}
                 onRequestMuteState={(muted) => requestMuteState(x.name, muted)}
+                technicianStream={x.techStream}
             />);
 
     function setRoomEnabled(room: Room, enabled: boolean) {
@@ -104,7 +106,7 @@ function App() {
                         <Card style={{width: 400, margin: 20}}>
                             <CardHeader title="Tips" style={{paddingBottom: 0}} />
                             <CardContent style={{paddingTop: 0}}>
-                                <Typography variant="body1">
+                                <Typography variant="body1" component="div">
                                     <ul>
                                         <li>The incoming panel preview updates once per second and represents what OBS actually sees for the active panel (even when on another scene).
                                             <strong> If it's blank, don't switch to the panel stream.</strong></li>
