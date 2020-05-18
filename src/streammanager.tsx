@@ -1,7 +1,7 @@
 import React, {ReactElement, useEffect, useState} from 'react';
 import OBS from "@ponyfest/obs-websocket-js";
 import {StreamAudioFixer} from "./streamaudiofixer";
-import {PANEL_SCENE, PANEL_SOURCE, TECH_SOURCE} from "./constants";
+import {PANEL_SOURCE, TECH_SOURCE} from "./constants";
 import "./streammanager.css";
 import {StreamSchedule} from "./streamschedule";
 import {StreamVolume} from "./streamvolume";

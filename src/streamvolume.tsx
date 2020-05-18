@@ -55,7 +55,7 @@ export function StreamVolume(props: StreamVolumeProps): ReactElement {
                 <VolumeDown />
             </Grid>
             <Grid item xs>
-                <Slider value={Math.cbrt(volume)} onChange={handleChange} valueLabelDisplay="auto" valueLabelFormat={(v) => v == 0 ? '-inf' :  (20*Math.log10(volume)).toFixed(1)} min={0} max={1} step={0.01} disabled={!receivedData} />
+                <Slider value={Math.cbrt(volume)} onChange={handleChange} valueLabelDisplay="auto" valueLabelFormat={(v) => v === 0 ? '-inf' :  (20*Math.log10(volume)).toFixed(1)} min={0} max={1} step={0.01} disabled={!receivedData} />
             </Grid>
             <Grid item>
                 <VolumeUp />
