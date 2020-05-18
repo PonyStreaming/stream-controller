@@ -14,7 +14,9 @@ import {
     Typography
 } from "@material-ui/core";
 import {Clock} from "./clock";
+import {STREAM_TRACKER} from "./constants";
 import VisibilityIcon from '@material-ui/icons/Visibility';
+import {MusicController} from "./utils/musiccontroller";
 
 interface Room {
     endpoint: string;
@@ -29,19 +31,21 @@ function App() {
     const [password, setPassword] = useState(localStorage["password"] || "");
     const [loggedIn, setLoggedIn] = useState(false);
     const [unmutedRoom, setUnmutedRoom] = useState("");
+    const [musicController, setMusicController] = useState(undefined as MusicController | undefined);
 
     useEffect(() => {
-        if (password === "") {
+        if (!loggedIn) {
             return;
         }
 
         (async () => {
-            const request = await fetch("https://tracker.stream-control.ponyfest.horse/api/outputs?password=" + password);
+            const request = await fetch(`${STREAM_TRACKER}/api/outputs?password=${password}`);
             const json = await request.json();
             setAvailableRooms(json.outputs);
             setRooms(json.outputs);
+            setMusicController(new MusicController(password, json.outputs.map((x: any) => x.name)))
         })();
-    }, [password]);
+    }, [password, loggedIn]);
 
     function logIn() {
         localStorage["password"] = password;
@@ -58,18 +62,6 @@ function App() {
         }
     }
 
-    const roomElements = rooms
-        .map(x =>
-            <Room
-                key={x.key}
-                name={x.name}
-                endpoint={x.endpoint}
-                streamName={x.key}
-                password={password}
-                muted={unmutedRoom !== x.name}
-                onRequestMuteState={(muted) => requestMuteState(x.name, muted)}
-                technicianStream={x.techStream}
-            />);
 
     function setRoomEnabled(room: Room, enabled: boolean) {
         if (enabled) {
@@ -79,7 +71,21 @@ function App() {
         }
     }
 
-    if (loggedIn) {
+    if (loggedIn && musicController) {
+        const roomElements = rooms
+            .map(x =>
+                <Room
+                    key={x.key}
+                    name={x.name}
+                    endpoint={x.endpoint}
+                    streamName={x.key}
+                    password={password}
+                    muted={unmutedRoom !== x.name}
+                    onRequestMuteState={(muted) => requestMuteState(x.name, muted)}
+                    technicianStream={x.techStream}
+                    musicController={musicController!}
+                />);
+
         return (
             <>
                 <div className="App">

@@ -4,10 +4,13 @@ import {SceneManager} from "./scenemanager";
 import {StreamManager} from "./streammanager";
 import {StreamStatus} from "./streamstatus";
 import "./room.css";
-import {Card, CardContent, CardHeader, Divider} from "@material-ui/core";
+import {Card, CardContent, CardHeader, Divider, IconButton} from "@material-ui/core";
 import VolumeUpIcon from '@material-ui/icons/VolumeUp';
 import VolumeOffIcon from '@material-ui/icons/VolumeOff';
+import LibraryMusic from '@material-ui/icons/LibraryMusic';
 import {PanelStreamTracker} from "./utils/panelstreamtracker";
+import {MusicControl} from "./musiccontrol";
+import {MusicController} from "./utils/musiccontroller";
 
 interface RoomProps {
     name: string;
@@ -17,6 +20,7 @@ interface RoomProps {
     password: string;
     muted: boolean;
     onRequestMuteState: (muted: boolean) => void;
+    musicController: MusicController;
 }
 
 const RECONNECT_DELAY_MS = 10000;
@@ -37,6 +41,7 @@ export function Room(props: RoomProps): ReactElement {
     const [previewAudio, setPreviewAudio] = useState(false);
     const [sceneAudio, setSceneAudio] = useState(false);
     const [streamTracker, setStreamTracker] = useState(undefined as PanelStreamTracker | undefined);
+    const [showingMusicControls, setShowingMusicControls] = useState(false);
 
     useEffect(() => {
         (async () => {
@@ -84,6 +89,10 @@ export function Room(props: RoomProps): ReactElement {
         }
     }, [props.endpoint, props.password]);
 
+    function showMusicPrompt() {
+        setShowingMusicControls(true);
+    }
+
     const connectedUI = obs ? <>
         <SceneManager
             obs={obs}
@@ -106,12 +115,13 @@ export function Room(props: RoomProps): ReactElement {
         <StreamStatus obs={obs} streamName={props.streamName} muted={props.muted || previewAudio || sceneAudio} />
     </> : <>Disconnected.</>;
 
-    const muteButton = props.muted ? <VolumeOffIcon color="secondary" onClick={() => props.onRequestMuteState(false)} style={{cursor: "pointer"}} /> : <VolumeUpIcon color="primary" onClick={() => props.onRequestMuteState(true)} style={{cursor: "pointer"}} />
+    const muteButton = <IconButton onClick={() => props.onRequestMuteState(!props.muted)}>{props.muted ? <VolumeOffIcon color="secondary" /> : <VolumeUpIcon color="primary" />}</IconButton>
 
     return <Card style={{width: 450, margin: 20}}>
-        <CardHeader title={props.name} style={{paddingBottom: 0}} action={muteButton} />
+        <CardHeader title={props.name} style={{paddingBottom: 0}} action={<><IconButton onClick={() => showMusicPrompt()}><LibraryMusic /></IconButton>{muteButton}</>} />
         <CardContent>
             {connectedUI}
         </CardContent>
+        <MusicControl musicController={props.musicController} stream={props.name} open={showingMusicControls} onClose={() => setShowingMusicControls(false)} />
     </Card>;
 }

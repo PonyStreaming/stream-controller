@@ -1,4 +1,4 @@
-const STREAM_TRACKER = "https://tracker.stream-control.ponyfest.horse"
+import {STREAM_TRACKER} from "../constants";
 
 export interface Stream {
     key: string;

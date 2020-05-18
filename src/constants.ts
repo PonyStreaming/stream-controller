@@ -5,3 +5,5 @@ export const PANEL_SCENE = "Panel";
 export const TITLE_MUSIC_SOURCE = "Title Card Music";
 export const TECH_SOURCE = "Technician RTMP";
 export const TECH_SCENE = "Technician Stream";
+export const STREAM_TRACKER = "https://tracker.stream-control.ponyfest.horse";
+export const MUSIC_CONTROL = "https://music-api.stream-control.ponyfest.horse";
