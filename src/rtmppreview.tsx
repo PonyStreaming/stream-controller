@@ -10,7 +10,7 @@ interface RTMPPreviewProps {
 }
 
 const SCALE_BOTTOM = -50;
-const SCALE_TOP = 10;
+const SCALE_TOP = 3;
 
 export function RTMPPreview(props: RTMPPreviewProps): ReactElement {
     const canvasRef = useRef(null as HTMLCanvasElement | null);
