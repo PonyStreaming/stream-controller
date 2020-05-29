@@ -22,11 +22,19 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
     const [previewImage, setPreviewImage] = useState("");
 
     useEffect(() => {
-        (async () => {
+        async function updateStreamURL() {
             const result = await props.obs.send("GetSourceSettings", {sourceName: "RTMP stream"});
             setCurrentStreamURL((result.sourceSettings as any).input);
             console.log(result);
-        })();
+        };
+
+        const interval = setInterval(updateStreamURL, 20000);
+
+        updateStreamURL();
+
+        return () => {
+            clearInterval(interval);
+        }
     }, [props.obs]);
 
     useEffect(() => {
