@@ -7,10 +7,11 @@ import {
     ListItemSecondaryAction,
     ListItemText,
     Popover,
-    Switch
+    Slider,
+    Switch,
 } from "@material-ui/core";
 import SettingsIcon from '@material-ui/icons/Settings';
-import {PANEL_SOURCE, PANEL_AUDIO_COMPRESSOR, PANEL_SCENE, WATERMARK_SOURCE} from "./constants";
+import {PANEL_SOURCE, PANEL_AUDIO_COMPRESSOR, PANEL_SCENE, WATERMARK_SOURCE, PANEL_AUDIO_GAIN} from "./constants";
 
 interface PanelSettingsProps {
     obs: OBS;
@@ -20,6 +21,7 @@ export function PanelSettings(props: PanelSettingsProps): ReactElement {
     const [anchor, setAnchor] = useState(null as HTMLElement | null);
     const [watermarkEnabled, setWatermarkEnabled] = useState(false);
     const [compressorEnabled, setCompressorEnabled] = useState(false);
+    const [extraGain, setExtraGain] = useState(0);
 
     useEffect(() => {
         (async () => {
@@ -59,12 +61,30 @@ export function PanelSettings(props: PanelSettingsProps): ReactElement {
         }
     }, [props.obs]);
 
+    useEffect(() => {
+        async function updateGain() {
+            const response = await props.obs.send("GetSourceFilterInfo", {sourceName: PANEL_SOURCE, filterName: PANEL_AUDIO_GAIN});
+            setExtraGain((response.settings as any).db);
+        }
+        updateGain();
+        let interval = setInterval(updateGain, 10000);
+
+        return () => {
+            clearInterval(interval);
+        }
+    }, [props.obs]);
+
     async function setWatermark(enabled: boolean) {
         await props.obs.send("SetSceneItemProperties", {"scene-name": PANEL_SCENE, item: WATERMARK_SOURCE, visible: enabled, position: {}, scale: {}, bounds: {}, crop: {}})
     }
 
     async function setCompressor(enabled: boolean) {
         await props.obs.send("SetSourceFilterVisibility", {sourceName: PANEL_SOURCE, filterName: PANEL_AUDIO_COMPRESSOR, filterEnabled: enabled as unknown as string /* this type is just wrong */});
+    }
+
+    async function handleGainChange(gain: number) {
+        setExtraGain(gain);
+        await props.obs.send("SetSourceFilterSettings", {sourceName: PANEL_SOURCE, filterName: PANEL_AUDIO_GAIN, filterSettings: {db: gain}});
     }
 
     return (
@@ -89,6 +109,12 @@ export function PanelSettings(props: PanelSettingsProps): ReactElement {
                         <ListItemSecondaryAction>
                             <Switch edge="end" checked={compressorEnabled}  onChange={(e, checked) => setCompressor(checked)} />
                         </ListItemSecondaryAction>
+                    </ListItem>
+                    <ListItem>
+                        <ListItemText primary="Extra gain" style={{whiteSpace: "nowrap"}} />
+                        <Slider value={extraGain} min={0} max={10} step={0.1} onChange={(e, value) => handleGainChange(value as number)} style={{width: 180}} valueLabelDisplay="auto" valueLabelFormat={(v) => v.toFixed(1)} />
+                    </ListItem>
+                    <ListItem style={{paddingTop: 0}}>
                     </ListItem>
                 </List>
             </Popover>

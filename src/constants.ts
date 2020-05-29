@@ -1,5 +1,6 @@
 export const PANEL_SOURCE = "RTMP stream";
 export const PANEL_AUDIO_COMPRESSOR = "Compressor";
+export const PANEL_AUDIO_GAIN = "Gain";
 export const WATERMARK_SOURCE = "White Logo";
 export const PANEL_SCENE = "Panel";
 export const TITLE_MUSIC_SOURCE = "PFO Music";
