@@ -1,4 +1,5 @@
 import React, {ReactElement, useEffect, useState} from 'react';
+import OBS from "@ponyfest/obs-websocket-js";
 import {
     Dialog,
     DialogContent,
@@ -25,12 +26,15 @@ import {
     UpNextUpdated
 } from "./utils/musiccontroller";
 import {TrackSelector} from "./trackselector";
+import {StreamVolume} from "./streamvolume";
+import {TITLE_MUSIC_SOURCE} from "./constants";
 
 export interface MusicControlProps {
     stream: string;
     open: boolean;
     onClose: () => void;
     musicController: MusicController;
+    obs?: OBS;
 }
 
 export function MusicControl(props: MusicControlProps): ReactElement {
@@ -129,6 +133,9 @@ export function MusicControl(props: MusicControlProps): ReactElement {
                         <SkipNext />
                     </IconButton>
                 </span>
+                <div style={{clear: "both"}}>
+                    <StreamVolume obs={props.obs} source={TITLE_MUSIC_SOURCE} />
+                </div>
             </DialogTitle>
             <DialogContent style={{padding: 0, width: 500}} dividers>
                 <List>

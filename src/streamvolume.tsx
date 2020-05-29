@@ -6,7 +6,7 @@ import VolumeUp from '@material-ui/icons/VolumeUp';
 
 
 interface StreamVolumeProps {
-    obs: OBS;
+    obs?: OBS;
     source: string;
 }
 
@@ -15,8 +15,12 @@ export function StreamVolume(props: StreamVolumeProps): ReactElement {
     const [receivedData, setReceivedData] = useState(false);
 
     useEffect(() => {
+        if(!props.obs) {
+            return;
+        }
+        const obs = props.obs;
         (async () => {
-            const result = await props.obs.send("GetVolume", {source: props.source});
+            const result = await obs.send("GetVolume", {source: props.source});
             setVolume(result.volume);
             setReceivedData(true);
         })();
@@ -32,9 +36,9 @@ export function StreamVolume(props: StreamVolumeProps): ReactElement {
             }, 500);
         };
 
-        props.obs.on("SourceVolumeChanged", volumeChanged);
+        obs.on("SourceVolumeChanged", volumeChanged);
         return () => {
-            props.obs.off("SourceVolumeChanged", volumeChanged);
+            obs.off("SourceVolumeChanged", volumeChanged);
             clearTimeout(debounce!);
         }
     }, [props.obs, props.source]);
@@ -46,7 +50,7 @@ export function StreamVolume(props: StreamVolumeProps): ReactElement {
         }
         const mul = value * value * value;
         setVolume(mul);
-        await props.obs.send("SetVolume", {source: props.source, volume: mul});
+        await props.obs!.send("SetVolume", {source: props.source, volume: mul});
     }
 
     return (

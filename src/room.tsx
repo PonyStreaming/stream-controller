@@ -122,6 +122,6 @@ export function Room(props: RoomProps): ReactElement {
         <CardContent>
             {connectedUI}
         </CardContent>
-        <MusicControl musicController={props.musicController} stream={props.name} open={showingMusicControls} onClose={() => setShowingMusicControls(false)} />
+        <MusicControl obs={obs} musicController={props.musicController} stream={props.name} open={showingMusicControls} onClose={() => setShowingMusicControls(false)} />
     </Card>;
 }
