@@ -1,6 +1,6 @@
 import moment, {Moment} from "moment-timezone";
 
-const SCHEDULE_URL = "https://schedule-api.ponyfest.horse/schedule/";
+const SCHEDULE_URL = "https://schedule-api.ponyfest.horse/schedule";
 
 export interface Event {
     id: string;
@@ -9,6 +9,7 @@ export interface Event {
     title: string;
     panelists: string;
     description: string;
+    isZoom: boolean;
 }
 
 export interface Schedule {
@@ -22,6 +23,7 @@ interface ReceivedEvent {
     title: string;
     panelists: string;
     description: string;
+    isZoom: boolean;
 }
 
 interface ReceivedSchedule {
