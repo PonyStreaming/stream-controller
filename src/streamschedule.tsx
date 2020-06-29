@@ -95,7 +95,7 @@ export function StreamSchedule(props: StreamScheduleProps): ReactElement {
                 <IconButton title="Copy Link" edge="end" onClick={(e) => {
                     navigator.clipboard.writeText("rtmp://rtmp.ponyfest.horse/live/" + x.stream?.key).then(() => {
                         setNotification("Copied RTMP link to clipboard");
-                    }).catch((e) => {
+                    }).catch(() => {
                         setNotification("Could not copy link. Key: " + x.stream?.key);
                     });
                     e.stopPropagation();

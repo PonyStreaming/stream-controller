@@ -26,7 +26,7 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
             const result = await props.obs.send("GetSourceSettings", {sourceName: "RTMP stream"});
             setCurrentStreamURL((result.sourceSettings as any).input);
             console.log(result);
-        };
+        }
 
         const interval = setInterval(updateStreamURL, 20000);
 
