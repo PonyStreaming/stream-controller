@@ -14,6 +14,7 @@ import LinkIcon from '@material-ui/icons/Link';
 import {PanelStreamTracker, Stream} from "./utils/panelstreamtracker";
 import {RTMPPreview} from "./rtmppreview";
 import ZoomIcon from "./zoom_icon.png";
+import {TIMEZONE} from "./constants";
 
 interface StreamScheduleProps {
     room: string;
@@ -87,7 +88,7 @@ export function StreamSchedule(props: StreamScheduleProps): ReactElement {
     const scheduleList = events.map(x => (
         <ListItem button key={x.id} selected={x.stream?.key === props.currentStreamKey} onClick={() => props.requestStreamKey(x.stream!.key)}>
             <ListItemText
-                primary={<><strong>{x.startTime.tz("America/New_York").format("HH:mm")}</strong>: {x.title}</>}
+                primary={<><strong>{x.startTime.tz(TIMEZONE).format("HH:mm")}</strong>: {x.title}</>}
                 secondary={<>{x.isZoom ? <img alt="Zoom" style={{width: 15, height: 15, verticalAlign: "top", paddingTop: 2}} src={ZoomIcon} /> : <></>} {x.panelists}</>}
             />
             <ListItemSecondaryAction>
