@@ -15,6 +15,7 @@ import {MusicController} from "./utils/musiccontroller";
 interface RoomProps {
     name: string;
     endpoint: string;
+    zoomEndpoint?: string;
     streamName: string;
     technicianStream: string;
     password: string;
@@ -36,6 +37,7 @@ async function getStreamTracker(password: string): Promise<PanelStreamTracker> {
 
 export function Room(props: RoomProps): ReactElement {
     const [obs, setObs] = useState(undefined as OBS | undefined);
+    const [zoomObs, setZoomObs] = useState(undefined as OBS | undefined);
     const [, setConnected] = useState(false);
     const [currentScene, setCurrentScene] = useState("");
     const [previewAudio, setPreviewAudio] = useState(false);
@@ -67,14 +69,12 @@ export function Room(props: RoomProps): ReactElement {
             obs.on("SwitchScenes", (data) => {
                 setCurrentScene(data["scene-name"]);
             })
-            obs.on("ConnectionClosed", () => {
-                setConnected(false);
-                setObs(undefined);
-            })
             obs.on("ConnectionClosed", onClose);
         }
 
         function onClose() {
+            setConnected(false);
+            setObs(undefined);
             console.log("closed, retrying...");
             setTimeout(connect, RECONNECT_DELAY_MS);
         }
@@ -89,11 +89,44 @@ export function Room(props: RoomProps): ReactElement {
         }
     }, [props.endpoint, props.password]);
 
+    useEffect(() => {
+        if (!props.zoomEndpoint) {
+            return;
+        }
+        const obs = new OBS();
+
+        async function connect() {
+            try {
+                await obs.connect({address: props.zoomEndpoint, password: props.password})
+            } catch(e) {
+                console.log("Connection failed", e);
+                setTimeout(connect, RECONNECT_DELAY_MS);
+                return;
+            }
+            setZoomObs(obs);
+            obs.on("ConnectionClosed", onClose);
+        }
+
+        function onClose() {
+            setZoomObs(undefined);
+            console.log("zoom closed, retrying...");
+            setTimeout(connect, RECONNECT_DELAY_MS);
+        }
+
+        connect();
+
+        return () => {
+            obs.off("ConnectionClosed", onClose);
+            obs.disconnect();
+            setZoomObs(undefined);
+        }
+    }, [props.zoomEndpoint, props.password]);
+
     function showMusicPrompt() {
         setShowingMusicControls(true);
     }
 
-    const connectedUI = obs ? <>
+    const connectedUI = obs && (zoomObs || !props.zoomEndpoint) ? <>
         <SceneManager
             obs={obs}
             currentScene={currentScene}
@@ -105,6 +138,7 @@ export function Room(props: RoomProps): ReactElement {
         <Divider />
         <StreamManager
             obs={obs}
+            zoomObs={zoomObs}
             roomName={props.name}
             password={props.password}
             muted={props.muted || !previewAudio}

@@ -23,6 +23,7 @@ interface Room {
     key: string;
     name: string;
     techStream: string;
+    zoomEndpoint?: string;
 }
 
 function App() {
@@ -78,6 +79,7 @@ function App() {
                     key={x.key}
                     name={x.name}
                     endpoint={x.endpoint}
+                    zoomEndpoint={x.zoomEndpoint}
                     streamName={x.key}
                     password={password}
                     muted={unmutedRoom !== x.name}

@@ -10,6 +10,7 @@ import {PanelStreamTracker} from "./utils/panelstreamtracker";
 
 interface StreamManagerProps {
     obs: OBS;
+    zoomObs?: OBS;
     roomName: string;
     password: string;
     muted: boolean;
@@ -58,6 +59,42 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
         setCurrentStreamURL(url);
     }
 
+    async function updateZoomKey(key: string, enabled: boolean) {
+        if (!props.zoomObs) {
+            if (enabled) {
+                console.error("asked to enable Zoom OBS, but can't contact it!");
+            }
+            return;
+        }
+        try {
+            // We do this unconditionally in case we happened to already be streaming, because we can't
+            // start a stream if we were already streaming. This should never happen, but probably will
+            // anyway.
+            await props.zoomObs.send("StopStreaming");
+        } catch(e) {
+            if (e.error !== "streaming not active") {
+                throw e;
+            }
+        }
+        if (enabled) {
+            await props.zoomObs.send("StartStreaming", {
+                stream: {
+                    type: "rtmp_custom",
+                    settings: {
+                        server: 'rtmp://rtmp.ponyfest.horse/live',
+                        key,
+                        'use-auth': false,
+                    }
+                }
+            });
+        }
+    }
+
+    async function switchFeed(key: string, needsObs: boolean) {
+        await updateZoomKey(key, needsObs);
+        await updateStreamURL('rtmp://rtmp.ponyfest.horse/live/' + key);
+    }
+
     return <div className="StreamManager">
         <StreamSchedule
             room={props.roomName}
@@ -65,7 +102,7 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
             muted={props.muted}
             requestMuteState={props.requestMuteState}
             currentStreamKey={currentStreamURL.split('/').pop()!}
-            requestStreamKey={(key) => updateStreamURL('rtmp://rtmp.ponyfest.horse/live/' + key)}
+            requestStreamKey={switchFeed}
             streamTracker={props.streamTracker}
         />
         <div className="StreamManager-panelpreview">
