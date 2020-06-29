@@ -36,7 +36,7 @@ async function getStreamTracker(password: string): Promise<PanelStreamTracker> {
 
 export function Room(props: RoomProps): ReactElement {
     const [obs, setObs] = useState(undefined as OBS | undefined);
-    const [connected, setConnected] = useState(false);
+    const [, setConnected] = useState(false);
     const [currentScene, setCurrentScene] = useState("");
     const [previewAudio, setPreviewAudio] = useState(false);
     const [sceneAudio, setSceneAudio] = useState(false);
