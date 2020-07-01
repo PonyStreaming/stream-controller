@@ -77,16 +77,18 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
             }
         }
         if (enabled) {
-            await props.zoomObs.send("StartStreaming", {
-                stream: {
-                    type: "rtmp_custom",
-                    settings: {
-                        server: 'rtmp://rtmp.ponyfest.horse/live',
-                        key,
-                        'use-auth': false,
-                    }
-                }
+            // In theory we can set the stream settings when starting the stream... in practice, though,
+            // that does not work. do the two steps separately.
+            await props.zoomObs.send("SetStreamSettings", {
+                type: "rtmp_custom",
+                settings: {
+                    server: 'rtmp://rtmp.ponyfest.horse/live',
+                    key,
+                    use_auth: false,
+                } as any, // the types think it should be use-auth instead of use_auth.
+                save: false
             });
+            await props.zoomObs.send("StartStreaming", {});
         }
     }
 
