@@ -113,7 +113,7 @@ export function StreamSchedule(props: StreamScheduleProps): ReactElement {
 
     return (
         <>
-            <List disablePadding={true} style={{marginTop: 8, marginBottom: 8, height: 150, overflow: 'scroll'}}>
+            <List disablePadding={true} style={{marginTop: 8, marginBottom: 8, height: 150, overflow: 'auto'}}>
                 {scheduleList}
             </List>
             <Popover
