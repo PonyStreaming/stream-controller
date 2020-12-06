@@ -16,6 +16,7 @@ interface RoomProps {
     name: string;
     endpoint: string;
     zoomEndpoint?: string;
+    streamApp?: string;
     streamName: string;
     technicianStream: string;
     password: string;
@@ -146,7 +147,7 @@ export function Room(props: RoomProps): ReactElement {
             streamTracker={streamTracker}
         />
         <Divider />
-        <StreamStatus obs={obs} streamName={props.streamName} muted={props.muted || previewAudio || sceneAudio} />
+        <StreamStatus obs={obs} streamApp={props.streamApp} streamName={props.streamName} muted={props.muted || previewAudio || sceneAudio} />
     </> : <>Disconnected.</>;
 
     const muteButton = <IconButton onClick={() => props.onRequestMuteState(!props.muted)}>{props.muted ? <VolumeOffIcon color="secondary" /> : <VolumeUpIcon color="primary" />}</IconButton>

@@ -5,6 +5,7 @@ import "./streamstatus.css";
 
 interface StreamStatusProps {
     obs: OBS;
+    streamApp?: string;
     streamName: string;
     muted: boolean;
 }
@@ -76,7 +77,7 @@ export function StreamStatus(props: StreamStatusProps): ReactElement {
         {streaming ? <>
         <div className="StreamStatus-preview">
                 <h4>Stream output</h4>
-                <RTMPPreview app="output" streamName={props.streamName} muted={props.muted} />
+                <RTMPPreview app={props.streamApp || "output"} streamName={props.streamName} muted={props.muted} />
         </div>
             </> : <></>}
         <details>

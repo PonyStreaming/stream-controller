@@ -20,6 +20,7 @@ import {MusicController} from "./utils/musiccontroller";
 
 interface Room {
     endpoint: string;
+    app?: string;
     key: string;
     name: string;
     techStream: string;
@@ -80,6 +81,7 @@ function App() {
                     name={x.name}
                     endpoint={x.endpoint}
                     zoomEndpoint={x.zoomEndpoint}
+                    streamApp={x.app}
                     streamName={x.key}
                     password={password}
                     muted={unmutedRoom !== x.name}
