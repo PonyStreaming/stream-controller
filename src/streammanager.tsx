@@ -7,6 +7,7 @@ import {StreamSchedule} from "./streamschedule";
 import {StreamVolume} from "./streamvolume";
 import {PanelSettings} from "./panelsettings";
 import {PanelStreamTracker} from "./utils/panelstreamtracker";
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@material-ui/core";
 
 interface StreamManagerProps {
     obs: OBS;
@@ -16,11 +17,13 @@ interface StreamManagerProps {
     muted: boolean;
     requestMuteState: (muted: boolean) => void;
     streamTracker?: PanelStreamTracker
+    transitionSafe: boolean;
 }
 
 export function StreamManager(props: StreamManagerProps): ReactElement {
     const [currentStreamURL, setCurrentStreamURL] = useState("");
     const [previewImage, setPreviewImage] = useState("");
+    const [confirmingSwitch, setConfirmingSwitch] = useState(null as null | {key: string, zoom: boolean});
 
     useEffect(() => {
         async function updateStreamURL() {
@@ -92,7 +95,12 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
         }
     }
 
-    async function switchFeed(key: string, needsObs: boolean) {
+    async function switchFeed(key: string, needsObs: boolean, confirmed?: boolean) {
+        if (!props.transitionSafe && !confirmed) {
+            setConfirmingSwitch({key, zoom: needsObs});
+            return;
+        }
+        setConfirmingSwitch(null);
         await updateZoomKey(key, needsObs);
         await updateStreamURL('rtmp://rtmp.ponyfest.horse/live/' + key);
     }
@@ -118,5 +126,24 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
             {/* Todo: put this button somewhere less ridiculous. */}
             <PanelSettings obs={props.obs} />
         </div>
+        <Dialog open={!!confirmingSwitch} onClose={() => setConfirmingSwitch(null)}>
+            <DialogTitle>Perform interrupting switch?</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    You are trying to switch panels while a panel is being streamed. This will cut off the current panel
+                    and switch immediately to another panel.
+                    If you are playing a prerecorded panel, it will not be possible to resume where you left off.
+                    Consider changing to non-panel scene before switching.
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={() => setConfirmingSwitch(null)} color="primary">
+                    Cancel
+                </Button>
+                <Button onClick={() => switchFeed(confirmingSwitch!.key, confirmingSwitch!.zoom, true)} color="secondary">
+                    Change panel
+                </Button>
+            </DialogActions>
+        </Dialog>
     </div>;
 }
