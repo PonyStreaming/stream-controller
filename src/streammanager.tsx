@@ -22,13 +22,25 @@ interface StreamManagerProps {
 
 export function StreamManager(props: StreamManagerProps): ReactElement {
     const [currentStreamURL, setCurrentStreamURL] = useState("");
+    const [currentLocalFile, setCurrentLocalFile] = useState("");
     const [previewImage, setPreviewImage] = useState("");
-    const [confirmingSwitch, setConfirmingSwitch] = useState(null as null | {key: string, zoom: boolean});
+    const [promptResolution, setPromptResolution] = useState(null as null | {r: (x: boolean) => void});
 
     useEffect(() => {
         async function updateStreamURL() {
             const result = await props.obs.send("GetSourceSettings", {sourceName: "RTMP stream"});
-            setCurrentStreamURL((result.sourceSettings as any).input);
+            if ((result.sourceSettings as any).is_local_file) {
+                const f = (result.sourceSettings as any).local_file;
+                // Avoid being confused by the reboot screen.
+                if (f.endsWith("Streaming_Standby.png")) {
+                    return;
+                }
+                setCurrentLocalFile(f);
+                setCurrentStreamURL("");
+            } else {
+                setCurrentStreamURL((result.sourceSettings as any).input);
+                setCurrentLocalFile("");
+            }
             console.log(result);
         }
 
@@ -58,8 +70,22 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
 
     async function updateStreamURL(url: string) {
         const currentSettings = await props.obs.send("GetSourceSettings", {sourceName: "RTMP stream"});
-        await props.obs.send("SetSourceSettings", {sourceName: "RTMP stream", sourceSettings: {...currentSettings, input: url}})
+        await props.obs.send("SetSourceSettings", {sourceName: "RTMP stream", sourceSettings: {...currentSettings, input: url, is_local_file: false, restart_on_activate: false, clear_on_media_end: false}})
         setCurrentStreamURL(url);
+        setCurrentLocalFile("");
+    }
+
+    async function updateLocalFile(path: string) {
+        const currentSettings = await props.obs.send("GetSourceSettings", {sourceName: "RTMP stream"});
+        await props.obs.send("SetSourceSettings", {sourceName: "RTMP stream", sourceSettings: {...currentSettings, local_file: path, is_local_file: true, restart_on_activate: true, clear_on_media_end: true}})
+        setCurrentStreamURL("");
+        setCurrentLocalFile(path)
+    }
+
+    function switchPrompt(): Promise<boolean> {
+        return new Promise<boolean>(((resolve) => {
+            setPromptResolution({r: resolve});
+        }))
     }
 
     async function updateZoomKey(key: string, enabled: boolean) {
@@ -95,14 +121,20 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
         }
     }
 
-    async function switchFeed(key: string, needsObs: boolean, confirmed?: boolean) {
-        if (!props.transitionSafe && !confirmed) {
-            setConfirmingSwitch({key, zoom: needsObs});
+    async function switchFeed(key: string, needsObs: boolean) {
+        if(!props.transitionSafe && !await switchPrompt()) {
             return;
         }
-        setConfirmingSwitch(null);
         await updateZoomKey(key, needsObs);
         await updateStreamURL('rtmp://rtmp.ponyfest.horse/live/' + key);
+    }
+
+    async function switchPrerec(filename: string) {
+        if(!props.transitionSafe && !await switchPrompt()) {
+            return;
+        }
+        await updateZoomKey("", false);
+        await updateLocalFile('C:/Users/paperspace/Desktop/Prerecs/' + filename);
     }
 
     return <div className="StreamManager">
@@ -112,7 +144,9 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
             muted={props.muted}
             requestMuteState={props.requestMuteState}
             currentStreamKey={currentStreamURL.split('/').pop()!}
+            currentLocalFile={currentLocalFile.split('/').pop()!}
             requestStreamKey={switchFeed}
+            requestPrerec={switchPrerec}
             streamTracker={props.streamTracker}
         />
         <div className="StreamManager-panelpreview">
@@ -126,7 +160,7 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
             {/* Todo: put this button somewhere less ridiculous. */}
             <PanelSettings obs={props.obs} />
         </div>
-        <Dialog open={!!confirmingSwitch} onClose={() => setConfirmingSwitch(null)}>
+        <Dialog open={!!promptResolution} onClose={() => {promptResolution!.r(false); setPromptResolution(null)}}>
             <DialogTitle>Perform interrupting switch?</DialogTitle>
             <DialogContent>
                 <DialogContentText>
@@ -137,10 +171,10 @@ export function StreamManager(props: StreamManagerProps): ReactElement {
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={() => setConfirmingSwitch(null)} color="primary">
+                <Button onClick={() => {promptResolution!.r(false); setPromptResolution(null)}} color="primary">
                     Cancel
                 </Button>
-                <Button onClick={() => switchFeed(confirmingSwitch!.key, confirmingSwitch!.zoom, true)} color="secondary">
+                <Button onClick={() => {promptResolution!.r(true); setPromptResolution(null)}} color="secondary">
                     Change panel
                 </Button>
             </DialogActions>

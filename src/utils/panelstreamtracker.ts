@@ -3,6 +3,7 @@ import {STREAM_TRACKER} from "../constants";
 export interface Stream {
     key: string;
     live: boolean;
+    prerec?: string;
 }
 
 interface StreamMap {
