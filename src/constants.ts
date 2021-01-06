@@ -8,4 +8,4 @@ export const TECH_SOURCE = "Technician RTMP";
 export const TECH_SCENE = "Technician Stream";
 export const STREAM_TRACKER = "https://tracker.stream-control.ponyfest.horse";
 export const MUSIC_CONTROL = "https://music-api.stream-control.ponyfest.horse";
-export const TIMEZONE = "America/New_York";
+export const TIMEZONE = "America/Los_Angeles";
