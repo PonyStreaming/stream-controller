@@ -11,7 +11,6 @@ import LibraryMusic from '@material-ui/icons/LibraryMusic';
 import {PanelStreamTracker} from "./utils/panelstreamtracker";
 import {MusicControl} from "./musiccontrol";
 import {MusicController} from "./utils/musiccontroller";
-import {PANEL_SCENE} from "./constants";
 
 interface RoomProps {
     name: string;
@@ -140,13 +139,10 @@ export function Room(props: RoomProps): ReactElement {
         <Divider />
         <StreamManager
             obs={obs}
-            zoomObs={zoomObs}
             roomName={props.name}
             password={props.password}
             muted={props.muted || !previewAudio}
             requestMuteState={(muted) => setPreviewAudio(!muted)}
-            streamTracker={streamTracker}
-            transitionSafe={currentScene !== PANEL_SCENE}
         />
         <Divider />
         <StreamStatus obs={obs} streamApp={props.streamApp} streamName={props.streamName} muted={props.muted || previewAudio || sceneAudio} />
